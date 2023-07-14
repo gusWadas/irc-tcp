@@ -40,7 +40,7 @@ int main()
     cout << "Start chatting with /connect" << endl;
     string message = read_line_from_file(stdin);
 
-    if (!(message.compare("/connect")) || message.length() ==9)
+    if (!(message.compare("/connect")))
     {
         Socket s = Socket(PORT);
         s.connect();

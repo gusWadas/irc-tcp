@@ -74,14 +74,9 @@ int main()
             {
                 int pongFlag = 0;
                 message = Socket::receive(currFD);
-                cout << "Current msg for client" << i << "  " <<  message << endl;
 
-                if (isCommand(message))
-                {
-                    switch (message[1])
-                    {
-                    case 'p': // ping
-                    {
+                if(message[0]="/"){
+                    if(message.compare("/ping")){
                         err = Socket::send(currFD, "pong", 0);
                         if (err == -1)
                         {
@@ -90,25 +85,17 @@ int main()
                         }
                         pongFlag++;
                         break;
-                    }
-                    case 'q': // quit
-                    {
+                    } else if(message.compare("/quit")){
                         closeConnection(currFD);
                         clients[i] = 0;
                         break;
-                    }
-                    default:
-                    {
+                    } else if(message[0]="/"){
                         err = Socket::send(currFD, "invalid command", 0);
-                        if (err == -1)
-                        {
+                        if (err == -1){
                             closeConnection(clients[i]);
                             clients[i] = 0;
                         }
-                    }
-                    }
-                }
-                else if (!pongFlag){
+                } else if (!pongFlag){
                     string fmtMessage = to_string(currFD) + ": " + message;
                     
                     for(int j = 0; j < MAX_CLIENTS; j++){
