@@ -1,11 +1,17 @@
 # IRC-TCP
 A Internet Relay Chat-TCP/IP implemented with C++ using Ubuntu 20.04 and compiled with g++ version 9.4.0.
 
-## Contributors
+## Original project by Contributors
 
 - Erick Patrick Andrade Barcelos, 11345562
 - Karoliny Oliveira Ozias Silva, 10368020
 - João Lucas Rodrigues Constantino, 11795763
+
+## Current project Contributors
+
+- Bernardo Maia Coelho,
+- Gustavo Wadas Lopes, 1275640
+- Pedro Henrique Vilela do Nascimento,
 
 ## Usage
 
