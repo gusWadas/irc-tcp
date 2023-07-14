@@ -67,14 +67,14 @@ int main()
         }
 
         // observing the clients
-        for (int i = 0; i < MAX_CLIENTS; i++)
-        {
+        for (int i = 0; i < MAX_CLIENTS; i++){
             currFD = clients[i];
 
             if (FD_ISSET(currFD, &fdset))
             {
                 int pongFlag = 0;
                 message = Socket::receive(currFD);
+                cout << "Current msg for client" << i << "  " <<  message << endl;
 
                 if (isCommand(message))
                 {
@@ -108,19 +108,14 @@ int main()
                     }
                     }
                 }
-                else if (!pongFlag)
-                {
-                    for (int i = 0; i < MAX_CLIENTS; i++)
-                    {
-                        string fmtMessage = to_string(currFD) + ": " + message;
-                        if (clients[i] != 0 && clients[i] != currFD)
-                        {
-                            err = Socket::send(clients[i], fmtMessage, 0);
-                            if (err == -1)
-                            {
-                                closeConnection(clients[i]);
-                                clients[i] = 0;
-                            }
+                else if (!pongFlag){
+                    string fmtMessage = to_string(currFD) + ": " + message;
+                    
+                    for(int j = 0; j < MAX_CLIENTS; j++){
+                        err = Socket::send(clients[j], fmtMessage, 0);
+                        if (err == -1){
+                            closeConnection(clients[j]);
+                            clients[j] = 0;
                         }
                     }
                 }

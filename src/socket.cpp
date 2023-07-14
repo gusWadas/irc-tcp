@@ -112,8 +112,7 @@ string Socket::receive(int fileDescriptor)
     char buffer[MAX_MESSAGE_SIZE + 1];
     memset(buffer, 0, MAX_MESSAGE_SIZE);
 
-    if (::recv(fileDescriptor, buffer, MAX_MESSAGE_SIZE, 0) < 0)
-    {
+    if (::recv(fileDescriptor, buffer, MAX_MESSAGE_SIZE, 0) <= 0){
         throw runtime_error("Failed to receive message");
     }
     return string(buffer);

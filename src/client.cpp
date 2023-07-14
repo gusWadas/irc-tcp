@@ -13,10 +13,16 @@ void listenFromServer()
     while (true)
     {
         mtx.lock();
-        message = Socket::receive(serverFD);
+        try{
+            message = Socket::receive(serverFD);
+        } catch(const runtime_error& e){
+            mtx.unlock();
+            break;
+        }
         cout << message << endl;
         mtx.unlock();
     }
+    return;
 }
 
 void Connect()
@@ -48,17 +54,23 @@ int main()
 
         while (true)
         {
+
             message = read_line_from_file(stdin);
             Socket::send(serverFD, message, 0);
+
+
             if (isCommand(message))
             {
                 message = Socket::receive(serverFD);
-                if (message == "bye")
-                    return 0;
                 cout << message << endl;
+                if (message == "bye"){
+                    t1.detach();
+                    return 0;
+                }
             }
         }
 
+        t1.detach();
         return 0;
     }
     else
