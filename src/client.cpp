@@ -40,8 +40,7 @@ int main()
     cout << "Start chatting with /connect" << endl;
     string message = read_line_from_file(stdin);
 
-    if (!(message.compare("/connect")))
-    {
+    if ((message.compare("/connect"))){
         Socket s = Socket(PORT);
         s.connect();
         serverFD = s.getfileDescriptor();
@@ -52,8 +51,7 @@ int main()
 
         thread t1(listenFromServer);
 
-        while (true)
-        {
+        while (true){
 
             message = read_line_from_file(stdin);
             Socket::send(serverFD, message, 0);
@@ -72,7 +70,7 @@ int main()
 
         t1.detach();
         return 0;
-    }
-    else
+    }else {
         exit(1);
+    }
 }
