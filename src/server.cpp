@@ -75,7 +75,7 @@ int main()
                 int pongFlag = 0;
                 message = Socket::receive(currFD);
 
-                if(message[0]="/"){
+                if(isCommand(message)){
                     if(message.compare("/ping")){
                         err = Socket::send(currFD, "pong", 0);
                         if (err == -1)
@@ -89,12 +89,13 @@ int main()
                         closeConnection(currFD);
                         clients[i] = 0;
                         break;
-                    } else if(message[0]="/"){
+                    } else {
                         err = Socket::send(currFD, "invalid command", 0);
                         if (err == -1){
                             closeConnection(clients[i]);
                             clients[i] = 0;
                         }
+                    }
                 } else if (!pongFlag){
                     string fmtMessage = to_string(currFD) + ": " + message;
                     
