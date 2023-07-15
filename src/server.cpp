@@ -76,7 +76,7 @@ int main()
                 message = Socket::receive(currFD);
 
                 if(isCommand(message)){
-                    if(message.compare("/ping")){
+                    if(!message.compare("/ping\n")){
                         err = Socket::send(currFD, "pong", 0);
                         if (err == -1)
                         {
@@ -85,7 +85,7 @@ int main()
                         }
                         pongFlag++;
                         break;
-                    } else if(message.compare("/quit")){
+                    } else if(!message.compare("/quit\n")){
                         closeConnection(currFD);
                         clients[i] = 0;
                         break;

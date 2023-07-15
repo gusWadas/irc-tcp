@@ -19,7 +19,7 @@ void listenFromServer()
             mtx.unlock();
             break;
         }
-        cout << message << endl;
+        cout << message;
         mtx.unlock();
     }
     return;
@@ -40,7 +40,7 @@ int main()
     cout << "Start chatting with /connect" << endl;
     string message = read_line_from_file(stdin);
 
-    if ((message.compare("/connect"))){
+    if (!(message.compare("/connect\n"))){
         Socket s = Socket(PORT);
         s.connect();
         serverFD = s.getfileDescriptor();
