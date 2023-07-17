@@ -194,13 +194,14 @@ int main(){
                     if(!(message.substr(0,6)).compare("/join ")){
                         string searched_name = message.substr(6);
                         int channel_index = -1;
-
+                        cout << "searching:  " << searched_name;
                         for(int c=0; c < MAX_CHANNELS; c++){    //  Searches for channel
                             if(!searched_name.compare(channels[c])){
                                 channel_index = c;
                                 break;
                             }
                         }
+                        cout << "  searched\n";
 
                         if(channel_index == -1 && number_of_occupied_channels < MAX_CHANNELS){
                             number_of_occupied_channels++;
@@ -234,18 +235,28 @@ int main(){
                                 shuts_down_client(i);
                             }
                             break;
-                        } else{
+                        } else if (client_kicked[i][channel_index] == 1){
+                                err = Socket::send(currFD, "Banned from channel.", 0);
+                            if (err == -1){
+                                shuts_down_client(i);
+                            }
+                            break;
+                        } else {
+                            cout << "trying to join existing channel\n";
                             int counter=0;
                             int j=0;
 
-                            for(j=0;j<MAX_CLIENTS;j++){
-                                if(channel_clients[client_channel][j] == i){
-                                    channel_clients[client_channel][j] = -1;
-                                    break;
+                            cout<< "Client current channel: " << client_channel;
+                            cout << "Banned? "<< client_kicked[i][channel_index] << "\n";
+                            if(client_channel>-1){
+                                for(j=0;j<MAX_CLIENTS;j++){
+                                    if(channel_clients[client_channel][j] == i){
+                                        channel_clients[client_channel][j] = -1;
+                                        break;
+                                    }
                                 }
+                                occupied_channels[client_channel] = occupied_channels[client_channel] - (occupied_channels[client_channel]%2);
                             }
-
-                            occupied_channels[client_channel] = occupied_channels[client_channel] - (occupied_channels[client_channel]%2);
                             
                             client_channels[i] = channel_index;
                             
