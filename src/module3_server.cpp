@@ -276,7 +276,7 @@ int main(){
 
                         break;
                     } else if(!((message.substr(0,10)).compare("/nickname "))){
-                        string new_nickname = message.substr(12);
+                        string new_nickname = message.substr(10);
                         if(new_nickname.length() >51){ //    50 characters + \n
                                 err = Socket::send(currFD, "Invalid new nickname. Set a nickname with size 50 or less.", 0);
                             if (err == -1){
@@ -379,7 +379,7 @@ int main(){
                             break;
                         } else if(!(message.substr(0,6)).compare("/mute ")){
                             string searched_name = message.substr(7);
-                            int client_index;
+                            int client_index=-1;
                             for(int c=0; c < MAX_NUMBER_CLIENTS; c++){    //  Searches for client
                                 if(!searched_name.compare(client_names[c])){
                                     client_index = c;
@@ -408,7 +408,7 @@ int main(){
                                 }
                             }
                             break;
-                        } else if(!(message.substr(0,6)).compare("/unmute ")){
+                        } else if(!(message.substr(0,8)).compare("/unmute ")){
                             string searched_name = message.substr(9);
                             int client_index;
                             for(int c=0; c < MAX_NUMBER_CLIENTS; c++){    //  Searches for client
