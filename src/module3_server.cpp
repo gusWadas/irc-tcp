@@ -370,7 +370,7 @@ int main(){
                                     shuts_down_channel(client_channel);
                                 }
                             }else if(client_channels[client_index] != client_channel){
-                                client_kicked[i][client_channel] = 1;
+                                client_kicked[client_index][client_channel] = 1;
                                 err = Socket::send(currFD, "Client banned from channel.", 0);
                                 if (err == -1){
                                     shuts_down_client(i);
@@ -378,8 +378,16 @@ int main(){
                                 }
                             } else{
                                 client_channels[client_index] = -1;
-                                client_kicked[i][client_channel] = 1;
+                                client_kicked[client_index][client_channel] = 1;
                                 occupied_channels[client_index] = occupied_channels[client_index] - (occupied_channels[client_index]%2);
+                                
+                                for(int k=0;k<MAX_CLIENTS;k++){
+                                    if(channel_clients[client_channel][k] == i){
+                                        channel_clients[client_channel][k] = -1;
+                                        break;
+                                    }
+                                }
+                                
                                 err = Socket::send(currFD, "Client banned from channel.", 0);
                                 if (err == -1){
                                     shuts_down_client(i);
@@ -410,7 +418,7 @@ int main(){
                                     shuts_down_channel(client_channel);
                                 }
                             } else {
-                                client_muted[i][client_channel] = 1;
+                                client_muted[client_index][client_channel] = 1;
                                 err = Socket::send(currFD, "Client muted in channel.", 0);
                                 if (err == -1){
                                     shuts_down_client(i);
@@ -440,7 +448,7 @@ int main(){
                                     shuts_down_channel(client_channel);
                                 }
                             } else {
-                                client_muted[i][client_channel] = 0;
+                                client_muted[client_index][client_channel] = 0;
                                 err = Socket::send(currFD, "Client unmuted in channel.", 0);
                                 if (err == -1){
                                     shuts_down_client(i);
@@ -496,16 +504,19 @@ int main(){
                     string name = client_names[i];
                     string fmtMessage = name.substr(0,(name.length()-1)) + ": " + message + "\n";
                     int client_holder;
-                    for(int j = 0; j < MAX_CLIENTS; j++){
-                        client_holder = channel_clients[client_channel][j];
-                        err = Socket::send(clients[client_holder], fmtMessage, 0);
-                        if (err == -1){
-                            if(admin[client_channel] == client_holder){
-                                shuts_down_channel(client_channel);
+                    if(client_muted[i][client_channel] == 1){
+                        for(int j = 0; j < MAX_CLIENTS; j++){
+                            client_holder = channel_clients[client_channel][j];
+                            err = Socket::send(clients[client_holder], fmtMessage, 0);
+                            if (err == -1){
+                                if(admin[client_channel] == client_holder){
+                                    shuts_down_channel(client_channel);
+                                }
+                                shuts_down_client(client_holder);
                             }
-                            shuts_down_client(client_holder);
                         }
                     }
+                    
                 }
                 pongFlag = 0;
             }
