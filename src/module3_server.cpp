@@ -338,7 +338,7 @@ int main(){
                         
                         if(!(message.substr(0,6)).compare("/kick ")){
 
-                            string searched_name = message.substr(7);
+                            string searched_name = message.substr(6);
                             for(int c=0; c < MAX_NUMBER_CLIENTS; c++){    //  Searches for client
                                 if(!searched_name.compare(client_names[c])){
                                     client_index = c;
@@ -378,8 +378,7 @@ int main(){
 
                             break;
                         } else if(!(message.substr(0,6)).compare("/mute ")){
-                            string searched_name = message.substr(7);
-                            int client_index=-1;
+                            string searched_name = message.substr(6);
                             for(int c=0; c < MAX_NUMBER_CLIENTS; c++){    //  Searches for client
                                 if(!searched_name.compare(client_names[c])){
                                     client_index = c;
@@ -409,8 +408,7 @@ int main(){
                             }
                             break;
                         } else if(!(message.substr(0,8)).compare("/unmute ")){
-                            string searched_name = message.substr(9);
-                            int client_index;
+                            string searched_name = message.substr(8);
                             for(int c=0; c < MAX_NUMBER_CLIENTS; c++){    //  Searches for client
                                 if(!searched_name.compare(client_names[c])){
                                     client_index = c;
@@ -439,8 +437,8 @@ int main(){
                                 }
                             }
                             break;
-                        } else if(!(message.substr(0,6)).compare("/Whois ")){
-                            string searched_name = message.substr(8);
+                        } else if(!(message.substr(0,7)).compare("/Whois ")){
+                            string searched_name = message.substr(7);
                             int client_index;
                             for(int c=0; c < MAX_NUMBER_CLIENTS; c++){    //  Searches for client
                                 if(!searched_name.compare(client_names[c])){
