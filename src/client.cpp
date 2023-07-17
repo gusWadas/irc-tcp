@@ -7,11 +7,10 @@
 mutex mtx;
 int serverFD;
 
-void listenFromServer()
-{
+void listenFromServer(){
     string message;
-    while (true)
-    {
+
+    while (true){
         mtx.lock();
         try{
             message = Socket::receive(serverFD);
@@ -19,10 +18,28 @@ void listenFromServer()
             mtx.unlock();
             break;
         }
-        cout << message;
+        cout << "\n{    " << message;
         mtx.unlock();
     }
     return;
+}
+
+void sendToServer(){
+    string message;
+
+    while (true){
+            message = read_line_from_file(stdin);
+            Socket::send(serverFD, message, 0);
+
+
+            if (isCommand(message)) {
+                message = Socket::receive(serverFD);
+                cout << message << endl;
+                if (message == "bye"){
+                    return;
+                }
+            }
+        }
 }
 
 void Connect()
@@ -32,8 +49,7 @@ void Connect()
     cout << message << endl;
 }
 
-int main()
-{
+int main(){
     signal(SIGINT, sigIntHandler);
 
     // --- Connecting client to server ---
@@ -50,25 +66,10 @@ int main()
         Connect();
 
         thread t1(listenFromServer);
+        thread t2(sendToServer);
 
-        while (true){
-
-            message = read_line_from_file(stdin);
-            Socket::send(serverFD, message, 0);
-
-
-            if (isCommand(message))
-            {
-                message = Socket::receive(serverFD);
-                cout << message << endl;
-                if (message == "bye"){
-                    t1.detach();
-                    return 0;
-                }
-            }
-        }
-
-        t1.detach();
+        t1.join();
+        t2.join();
         return 0;
     }else {
         exit(1);

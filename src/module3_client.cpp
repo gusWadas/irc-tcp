@@ -4,100 +4,81 @@
 #include <thread>
 #include <mutex>
 
-// Variáveis globais
-int serverFD;
-thread server_listener;
 mutex mtx;
+int serverFD;
 
-
-// Escuta o servidor
-void listenFromServer(bool *can_exit) {
+void listenFromServer(){
     string message;
-    while ((*can_exit) == false) {
+    Socket s = Socket(PORT);
+    while (true){
         mtx.lock();
-        message = Socket::receive(serverFD);
-        cout << message << endl;
-        mtx.unlock();
-    }
-}
-
-
-// Escuta o terminal do usuário
-void listenFromTerminal(bool *can_exit, string nickname) {
-
-    // String utilitária
-    string message;
-
-    // Execução enquanto não solicitar interrupção
-    while ((*can_exit) == false) {
-
-        // Processamento da mensagem
-        message = read_line_from_file(stdin);
-        if (isCommand(message) == false) {
-            Socket::send(serverFD, nickname + message, 0);
+        try{
+            message = Socket::receive(serverFD);
+        } catch(const runtime_error& e){
+            mtx.unlock();
+            break;
         }
 
-        // Processamento do comando
-        else {
-            switch(message[1]) {
+        if(message == "sendIP"){
+            message = s.getAddress();
+            Socket::send(serverFD, message, 0);
+        }else{
+            cout << message;
+        }
+        mtx.unlock();
+    }
+    return;
+}
 
-                // connect
-                case 'c': {
-                    Socket::send(serverFD, nickname + "/connect", 0);
-                    break;
-                }
-                
-                // nickname
-                case 'n': {
-                    nickname = message.substr(message.find(' ') + 1, message.length() - 1);
-                    nickname.append(": ");
-                    break;
-                }
+void sendToServer(){
+    string message;
 
-                // quit
-                case 'q': {
-                    Socket::send(serverFD, nickname + "/quit", 0);
-                    (*can_exit) = true;
-                    break;
-                }
+    while (true){
+            message = read_line_from_file(stdin);
+            Socket::send(serverFD, message, 0);
 
-                // comando sem correspondência: envia ao servidor
-                default: {
-                    Socket::send(serverFD, nickname + message, 0);
-                    break;
+
+            if (isCommand(message)) {
+                message = Socket::receive(serverFD);
+                cout << message << endl;
+                if (message == "bye"){
+                    return;
                 }
             }
         }
+}
+
+void Connect()
+{
+    Socket::send(serverFD, "", 0);
+    string message = Socket::receive(serverFD);
+    cout << message << endl;
+}
+
+int main(){
+    signal(SIGINT, sigIntHandler);
+
+    // --- Connecting client to server ---
+    cout << "Start chatting with /connect" << endl;
+    string message = read_line_from_file(stdin);
+
+    if (!(message.compare("/connect\n"))){
+        Socket s = Socket(PORT);
+        s.connect();
+        serverFD = s.getfileDescriptor();
+
+        // --- Running client ---
+
+        Connect();
+
+        thread t1(listenFromServer);
+        thread t2(sendToServer);
+
+        t1.join();
+        t2.join();
+        return 0;
+    }else {
+        exit(1);
     }
 }
 
-int main()
-{
-    // Ignora ctrl + c e SIGPIPE
-    signal(SIGINT, sigIntHandler);
-    signal(SIGPIPE, SIG_IGN);
-
-    // Socket
-    Socket s = Socket(PORT);
-    s.connect();
-    serverFD = s.getfileDescriptor();
-
-    // Controle de execução
-    bool can_exit = false;
-
-    // Apelido de usuário
-    cout << "Enter a nickname: ";
-    string nickname = read_line_from_file(stdin);
-    nickname = nickname.substr(0, nickname.length() - 1);
-    nickname.append(": ");
-
-    // Threads
-    thread terminal_listener = thread(listenFromTerminal, &can_exit, nickname);
-    server_listener = thread(listenFromServer, &can_exit);
-
-    // Inicialização da thread de terminal
-    terminal_listener.join();
-    server_listener.join();
-
-    return 0;
-}

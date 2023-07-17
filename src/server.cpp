@@ -45,8 +45,7 @@ int main()
 
         // wait indefinitely for activity on any socket (timeout is NULL)
         ready = select(maxFD + 1, &fdset, NULL, NULL, NULL);
-        if ((ready < 0) && (errno != EINTR))
-        {
+        if ((ready < 0) && (errno != EINTR)){
             printf("Failed to retrieve the number of ready descriptors");
         }
 
@@ -97,7 +96,8 @@ int main()
                         }
                     }
                 } else if (!pongFlag){
-                    string fmtMessage = to_string(currFD) + ": " + message;
+                    message.pop_back();
+                    string fmtMessage = to_string(currFD) + ": " + message + "  }\n";
                     
                     for(int j = 0; j < MAX_CLIENTS; j++){
                         err = Socket::send(clients[j], fmtMessage, 0);
@@ -113,3 +113,4 @@ int main()
     }
     return 0;
 }
+

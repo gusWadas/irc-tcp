@@ -12,7 +12,7 @@
 #include <sys/time.h>
 
 #define MAX_MESSAGE_SIZE 4096
-#define MAX_CONNECTIONS 10
+#define MAX_CONNECTIONS 25
 #define PORT 8080
 
 using namespace std;
